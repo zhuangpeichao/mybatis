@@ -1,0 +1,3 @@
+# Project exclude paths
+/out/
+/out/production/mybatis/web/WEB-INF/classes/

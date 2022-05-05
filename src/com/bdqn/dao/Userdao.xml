@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--id和接口中的方法名一一对应,必须唯一-->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.dao.UserDao">
+    <select id="querAll" resultType="User">
+        select * from tbl_user
+    </select>
+    <select id="queryLogin" resultType="User">
+        select * from tbl_user where  userName=#{userName} and userPwd=#{userPwd}
+    </select>
+    <select id="selectById" resultType="User">
+        select * from tbl_user where  userId=#{id}
+    </select>
+</mapper>

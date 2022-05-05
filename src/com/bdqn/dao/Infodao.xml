@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--id和接口中的方法名一一对应,必须唯一-->
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bdqn.dao.InfoDao">
+    <resultMap id="InfoMap" type="Info">
+        <id property="newsId" column="newsId"></id>
+        <result property="newsTitle" column="newsTitle"></result>
+        <result property="newsImg" column="newsImg"></result>
+        <result property="newsContent" column="newsContent"></result>
+
+        <result property="sendTime" column="sendTime"></result>
+        <association property="sendUser" column="sendUser" javaType="com.bdqn.bean.User">
+            <id property="userId" column="userId"></id>
+            <result property="realName" column="realName"></result>
+        </association>
+        <association property="newsType" column="newsType" javaType="com.bdqn.bean.Type">
+            <id property="typeId" column="typeId"></id>
+            <result property="typeName" column="typeName"></result>
+        </association>
+    </resultMap>
+
+    <select id="select" resultMap="InfoMap">
+        select * from tbl_news_infor tni
+         inner join  tbl_news_type tnt on tni.newsType=tnt.typeId
+         inner join tbl_user tu on tni.sendUser=tu.userId
+        where  newsId=#{id}
+    </select>
+
+    <insert id="sava">
+        insert into tbl_news_infor(newsTitle,newsImg,newsContent,sendTime,sendUser,newsType)
+        values (#{newsTitle},#{newsImg},#{newsContent},#{sendTime},#{sendUser.userId},#{newsType.typeId})
+    </insert>
+
+    <update id="update">
+        update tbl_news_infor
+        <set>
+            <if test="null!=newsTitle">newsTitle=#{newsTitle},</if>
+            <if test="null!=newsImg">newsImg=#{newsImg},</if>
+            <if test="null!=newsContent">newsContent=#{newsContent},</if>
+            <if test="null!=sendTime">sendTime=#{sendTime},</if>
+            <if test="null!=sendUser">sendUser=#{sendUser.userId},</if>
+            <if test="null!=newsType">newsType=#{newsType.typeId},</if>
+        </set>
+        
+        where newsId=#{newsId}
+    </update>
+
+    <delete id="delete">
+    delete from tbl_news_infor where newsId=#{newsId}
+    </delete>
+
+
+
+    <select id="queryBypage" resultMap="InfoMap">
+        select * from tbl_news_infor
+         <trim prefix="where" prefixOverrides="and">
+            <if test="null!=typestr and typestr>0 "> and newsType=#{typestr}</if>
+        <if test="null!=keywords and ''!=keywords "> and newsTiTle like CONCAT ('%',#{keywords},'%')</if>
+         </trim>
+        limit #{pageNo},#{size}
+    </select>
+
+<insert id="savaList" >
+    insert into tbl_news_infor(newsTitle,newsType,newsImg,newsContent,sendUser,sendTime)
+    values
+    <foreach collection="savaList" item="sava1" separator=",">
+    (#{sava1.newsTitle},#{sava1.newsType.typeId},#{sava1.newsImg},#{sava1.newsContent},#{sava1.sendUser.userId},#{sava1.sendTime})
+    </foreach>
+</insert>
+
+<delete id="delateAll">
+    delete from tbl_news_infor  where newsId in
+    <foreach collection="delateAll" item="obj" separator="," open="(" close=")">
+        #{obj}
+    </foreach>
+</delete>
+
+
+
+</mapper>
